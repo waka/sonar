@@ -4,7 +4,10 @@ extern crate env_logger;
 extern crate getopts;
 extern crate sonar;
 
-use std::{env, error};
+use sonar::args::Args;
+
+use std::env;
+use std::error;
 use std::io::{self, Write};
 use std::process;
 use std::result;
@@ -17,7 +20,7 @@ enum Action {
     Help,
     Version,
     Run {
-        args: sonar::Args,
+        args: Args,
     },
 }
 
@@ -27,7 +30,7 @@ fn make_options() -> Options {
     opts.optflag("v", "version", "show version information");
     opts.optflag("r", "recursive", "search recursively");
     opts.optflag("i", "ignore-case", "case sensitive");
-    opts.optflag("e", "", "regex switch");
+    opts.optflag("e", "regex", "regex switch");
     opts
 }
 
@@ -53,7 +56,7 @@ fn execute() -> Result<i32> {
             print_version();
         }
         Action::Run { args } => {
-            sonar::run(&args);
+            sonar::run(args);
         }
     }
 
@@ -68,7 +71,7 @@ fn handle_action(matches: &Matches) -> Result<Action> {
         return Ok(Action::Version);
     }
     if 2 > matches.free.len() {
-        return Err(Error::from(format!("Invalid args")));
+        return Err(Error::from(format!("invalid args")));
     }
 
     let pattern = matches.free[0].clone();
@@ -77,11 +80,11 @@ fn handle_action(matches: &Matches) -> Result<Action> {
         .skip(1)
         .map(|path| (path.to_string()))
         .collect();
-    let args = sonar::Args::build(pattern,
-                                  paths,
-                                  matches.opt_present("i"),
-                                  matches.opt_present("r"),
-                                  matches.opt_present("e"));
+    let args = Args::build(pattern,
+                           paths,
+                           matches.opt_present("i"),
+                           matches.opt_present("r"),
+                           matches.opt_present("e"));
     Ok(Action::Run { args: args })
 }
 
@@ -91,7 +94,7 @@ fn main() {
     let exit_code = match execute() {
         Ok(code) => code,
         Err(e) => {
-            println!("{}", e.to_string());
+            println!("error: {}", e.to_string());
             1
         }
     };

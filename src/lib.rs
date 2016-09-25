@@ -1,30 +1,17 @@
 #![crate_name = "sonar"]
 
-#[derive(Debug)]
-pub struct Args {
-    pattern: String,
-    paths: Vec<String>,
-    ignore_case: bool,
-    recursive: bool,
-    regex: bool,
-}
-impl Args {
-    pub fn build(pattern: String,
-                 paths: Vec<String>,
-                 ignore_case: bool,
-                 recursive: bool,
-                 regex: bool)
-                 -> Args {
-        Args {
-            pattern: pattern,
-            paths: paths,
-            ignore_case: ignore_case,
-            recursive: recursive,
-            regex: regex,
-        }
-    }
-}
+use args::Args;
 
-pub fn run(args: &Args) {
+pub mod args;
+mod searcher;
+
+pub fn run(args: Args) {
     println!("run: {:?}", args);
+    println!("pattern: {}", args.get_pattern());
+    println!("paths: {:?}", args.get_paths());
+
+    // pathをwalk throughして検索していく
+    for path in args.get_paths() {
+        let _ = searcher::search(args.get_pattern(), path).unwrap();
+    }
 }

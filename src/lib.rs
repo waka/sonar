@@ -1,17 +1,21 @@
 #![crate_name = "sonar"]
 
-use args::Args;
-
 pub mod args;
 mod searcher;
+mod walker;
 
-pub fn run(args: Args) {
-    println!("run: {:?}", args);
-    println!("pattern: {}", args.get_pattern());
-    println!("paths: {:?}", args.get_paths());
+pub fn run(args: args::Args) {
+    let paths = walker.walk(args.paths, args.recursive);
+    let lines = Vec::new();
 
-    // pathをwalk throughして検索していく
-    for path in args.get_paths() {
-        let _ = searcher::search(args.get_pattern(), path).unwrap();
+    for path in paths {
+        match searcher::search(args.get_pattern(), path) {
+            Ok(line) => {
+                lines.add(line);
+            }
+            Err(e) => {}
+        }
     }
+
+    lines
 }

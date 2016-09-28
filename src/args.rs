@@ -8,6 +8,7 @@ pub struct Args {
     recursive: bool,
     regex: bool,
 }
+
 impl Args {
     pub fn build(pattern: String,
                  paths: Vec<String>,

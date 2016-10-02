@@ -1,12 +1,10 @@
-use std::path::PathBuf;
-
 #[derive(Debug)]
 pub struct Args {
     pattern: String,
     paths: Vec<String>,
     ignore_case: bool,
-    recursive: bool,
-    regex: bool,
+    pub recursive: bool,
+    pub regex: bool,
 }
 
 impl Args {
@@ -33,10 +31,7 @@ impl Args {
         }
     }
 
-    pub fn get_paths(&self) -> Vec<PathBuf> {
-        self.paths
-            .iter()
-            .map(|path| PathBuf::from(path))
-            .collect()
+    pub fn get_paths(&self) -> Vec<String> {
+        self.paths.clone()
     }
 }

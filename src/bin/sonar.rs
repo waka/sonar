@@ -56,7 +56,14 @@ fn execute() -> Result<i32> {
             print_version();
         }
         Action::Run { args } => {
-            sonar::run(args);
+            match sonar::run(args) {
+                Ok(results) => {
+                    println!("{}", results.join("\n"));
+                }
+                Err(e) => {
+                    println!("error: {}", e.to_string());
+                }
+            }
         }
     }
 

@@ -1,12 +1,12 @@
 use std::error;
 use std::fs::File;
 use std::io::Read;
-use std::result::Result;
 use std::path::PathBuf;
+use std::result::Result;
 
 type Error = Box<error::Error + Send + Sync>;
 
-pub fn search(pattern: String, path: PathBuf) -> Result<bool, Error> {
+pub fn search(pattern: String, path: PathBuf) -> Result<Vec<String>, Error> {
     let mut stream = match File::open(&path) {
         Ok(fstream) => Box::new(fstream) as Box<Read>,
         Err(e) => {
@@ -17,15 +17,15 @@ pub fn search(pattern: String, path: PathBuf) -> Result<bool, Error> {
     let mut content = String::new();
     try!(stream.read_to_string(&mut content));
 
-    let lines = content.split("\n");
-    for line in lines {
+    let mut lines = vec![];
+    for line in content.split("\n") {
         match line.find(&pattern[..]) {
             Some(_) => {
-                println!("{}", line);
+                lines.push(line.to_string());
             }
             _ => {}
         }
     }
 
-    Ok(true)
+    Ok(lines)
 }
